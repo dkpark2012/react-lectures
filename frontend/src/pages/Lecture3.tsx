@@ -1,124 +1,103 @@
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-import UserCard from '../components/UserCard'
+import { useState } from 'react';
 
-interface User {
-  id: number
-  name: string
-  email: string
-  age: number
-}
+/**
+ * [Step-3] JSX 문법의 규칙과 자바스크립트와의 차이
+ * 💡 핵심 포인트:
+ * 1. Data Binding (데이터 바인딩): 자바스크립트 변수와 UI 요소를 연결하는 기술입니다.
+ * 2. Two-way Binding Simulation (양방향 바인딩 시뮬레이션): 입력값에 따라 상태를 업데이트하고, 그 상태가 다시 화면에 반영되는 과정입니다.
+ */
 
-function Lecture3() {
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const APP_BASE_URL = import.meta.env.VITE_API_BASE_URL
+export default function Lecture3() {
+  const [userName, setUserName] = useState<string>('리액트 학습자');
+  const [isBlue, setIsBlue] = useState<boolean>(false);
+  const [logs, setLogs] = useState<string[]>([]);
 
-  console.log('🎨 Lecture3 렌더링, users 수:', users.length)
+  const addLog = (msg: string) => {
+    setLogs(prev => [msg, ...prev].slice(0, 5));
+  };
 
-  useEffect(() => {
-    axios.get<User[]>(`${APP_BASE_URL}/api/users`)
-      .then(response => {
-        setUsers(response.data)
-        setLoading(false)
-      })
-      .catch(error => {
-        console.error('Error:', error)
-        setLoading(false)
-      })
-  }, [])
-
-  const handleDelete = (id: number) => {
-    console.log('삭제 요청:', id)
-    setUsers(prevUsers => prevUsers.filter(user => user.id !== id))
-  }
-
-  if (loading) {
-    return <div style={{ padding: '20px' }}>Loading...</div>
-  }
+  // setUserName을 활용한 이벤트 핸들러
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setUserName(newName);
+    addLog(`[Update] 이름이 '${newName}'으로 변경됨`);
+  };
 
   return (
-    <div>
-      <h1>📚 Lecture 3: 컴포넌트 분리와 Props</h1>
-      
-      <div style={sectionStyle}>
-        <h2>학습 목표</h2>
-        <ul>
-          <li>컴포넌트 재사용성의 중요성 이해</li>
-          <li>Props를 통한 부모→자식 데이터 흐름</li>
-          <li>콜백 Props로 자식→부모 이벤트 전달</li>
-          <li>TypeScript Interface로 타입 안정성 확보</li>
-        </ul>
-      </div>
+    <div className="lecture-container">
+      <h1 className="lecture-title">Step-3: JSX 문법의 규칙과 JS와의 차이</h1>
 
-      <div style={sectionStyle}>
-        <h2>사용자 목록 ({users.length}명)</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
-          {users.map(user => (
-            <UserCard 
-              key={user.id}
-              id={user.id}
-              name={user.name}
-              email={user.email}
-              age={user.age}
-              onDelete={handleDelete}
-            />
-          ))}
+      <section className="lecture-section">
+        <h2>1. JSX 안에서의 자바스크립트 활용</h2>
+        <p>
+          JSX 내에서 자바스크립트 변수를 출력하거나 조작할 때는 <strong>Curly Braces(중괄호, { })</strong>를 사용합니다. 
+          이는 리액트가 해당 부분을 텍스트가 아닌 '실행 가능한 코드'로 인식하게 만듭니다.
+        </p>
+      </section>
+
+      <div className="demo-grid">
+        {/* 수정된 카드: setUserName 실습 */}
+        <div className="lecture-card">
+          <h3>✅ 실습: 실시간 데이터 반영</h3>
+          <p>Input에 이름을 입력하면 <strong>setUserName</strong> 함수가 상태를 업데이트합니다.</p>
+          
+          <input 
+            type="text" 
+            value={userName} 
+            onChange={handleNameChange}
+            placeholder="이름을 입력하세요"
+            style={{ 
+              padding: '8px', 
+              borderRadius: '4px', 
+              border: '1px solid #ddd', 
+              width: '100%',
+              marginBottom: '10px'
+            }}
+          />
+          
+          <div className="display-box">
+            안녕하세요, {userName}님!
+          </div>
+        </div>
+
+        {/* 규칙 2: 속성과 스타일 */}
+        <div className="lecture-card">
+          <h3>✅ 규칙 2: 스타일 객체 활용</h3>
+          <p>JSX에서 style 속성은 문자열이 아닌 <strong>Object(객체)</strong>로 전달해야 하며, 속성명은 카멜 케이스를 따릅니다.</p>
+          
+          <button 
+            className="btn btn-success" 
+            onClick={() => {
+              setIsBlue(!isBlue);
+              addLog(`[Style] 색상 모드 토글: ${!isBlue ? 'Blue' : 'Mint'}`);
+            }}
+          >
+            색상 변경하기
+          </button>
+          
+          <div className="display-box" style={{ color: isBlue ? '#0984e3' : '#00cec9', transition: '0.3s' }}>
+            {isBlue ? '현재 스타일: Blue' : '현재 스타일: Mint'}
+          </div>
         </div>
       </div>
 
-      <div style={{ ...sectionStyle, backgroundColor: '#e3f2fd' }}>
-        <h3>💡 관찰 포인트</h3>
-        <ul>
-          <li>삭제 버튼 클릭 시 어떤 컴포넌트가 리렌더링되는가?</li>
-          <li>Console에서 각 UserCard의 렌더링 로그 확인</li>
-          <li>props로 함수를 전달하는 패턴 확인</li>
-        </ul>
-      </div>
+      
 
-      <div style={{ ...sectionStyle, backgroundColor: '#fff3cd' }}>
-        <h3>💡 핵심 개념</h3>
-        <ul>
-          <li><strong>Props</strong>: 부모 → 자식으로의 단방향 데이터 흐름</li>
-          <li><strong>콜백 Props</strong>: 자식 → 부모로 이벤트 전달</li>
-          <li><strong>컴포넌트 재사용</strong>: UserCard를 여러 곳에서 사용</li>
-          <li><strong>TypeScript Interface</strong>: Props 타입 정의로 안정성 확보</li>
-        </ul>
-      </div>
+      <section className="log-section">
+        <h3>📊 Event & State Log</h3>
+        <div className="log-container">
+          {logs.length === 0 && <div className="log-item">- 입력을 시작하거나 버튼을 눌러보세요.</div>}
+          {logs.map((log, i) => (
+            <div key={i} className="log-item">{log}</div>
+          ))}
+        </div>
+      </section>
 
-      <div style={{ ...sectionStyle, backgroundColor: '#f0f0f0' }}>
-        <h3>📁 파일 구조</h3>
-        <pre style={{ backgroundColor: '#fff', padding: '15px', borderRadius: '4px' }}>
-{`src/
-  ├── pages/
-  │   └── Lecture3.tsx      ← 현재 파일 (부모 컴포넌트)
-  └── components/
-      └── UserCard.tsx      ← 자식 컴포넌트 (재사용 가능)`}
-        </pre>
-        <p style={{ marginTop: '10px' }}>
-          <strong>UserCard.tsx</strong> 파일을 열어서 어떻게 props를 받는지 확인하세요!
+      <footer className="lecture-section" style={{ marginTop: '40px', fontSize: '12px', color: '#95a5a6' }}>
+        <p>
+          💡 <strong>핵심 요약:</strong> JSX 내부에서 <code>onChange</code> 같은 <strong>Event Handler(이벤트 핸들러, 특정 사건이 발생했을 때 실행되는 함수)</strong>를 연결할 때도 중괄호를 사용함을 잊지 마세요!
         </p>
-      </div>
-
-      <div style={{ ...sectionStyle, backgroundColor: '#e8f5e9' }}>
-        <h3>🔬 실습 과제</h3>
-        <ol>
-          <li>UserCard에 새로운 prop 추가해보기 (예: isActive: boolean)</li>
-          <li>삭제 버튼 대신 "수정" 버튼 추가해보기</li>
-          <li>props를 잘못 전달하면 TypeScript 에러가 나는지 확인</li>
-          <li>UserCard 없이 inline으로 작성했다면 코드가 얼마나 복잡해질지 상상해보기</li>
-        </ol>
-      </div>
+      </footer>
     </div>
-  )
+  );
 }
-
-const sectionStyle: React.CSSProperties = {
-  border: '2px solid #e0e0e0',
-  padding: '20px',
-  marginBottom: '20px',
-  borderRadius: '8px',
-  backgroundColor: 'white'
-}
-
-export default Lecture3

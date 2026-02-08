@@ -1,92 +1,72 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // useNavigate 추가
 
-interface LectureItem {
-  path: string
-  title: string
-  description: string
-}
+const curriculum = [
+  { id: 'lv1', title: '초급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 1, path: `/study/lecture${i + 1}` })) },
+  { id: 'lv2', title: '초상급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 11, path: `/study/lecture${i + 11}` })) },
+  { id: 'lv3', title: '중급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 21, path: `/study/lecture${i + 21}` })) },
+  { id: 'lv4', title: '중상급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 31, path: `/study/lecture${i + 31}` })) },
+  { id: 'lv5', title: '고급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 41, path: `/study/lecture${i + 41}` })) },
+];
 
-const lectures: LectureItem[] = [
-  { path: '/study/lecture1', title: 'Lecture 1', description: 'State와 리렌더링' },
-  { path: '/study/lecture2', title: 'Lecture 2', description: 'useEffect' },
-  { path: '/study/lecture3', title: 'Lecture 3', description: '컴포넌트 분리' },
-  { path: '/study/lecture4', title: 'Lecture 4', description: '리스트 렌더링' },
-  { path: '/study/lecture5', title: 'Lecture 5', description: '조건부 렌더링' },
-  { path: '/study/lecture6', title: 'Lecture 6', description: '폼 처리' },
-  // { path: '/study/lecture7', title: 'Lecture 7', description: '최적화' },
-  // { path: '/study/lecture8', title: 'Lecture 8', description: '커스텀 Hook' },
-  // { path: '/study/lecture9', title: 'Lecture 9', description: '에러 처리' },
-  // { path: '/study/lecture10', title: 'Lecture 10', description: 'CRUD' },
-]
+export default function Navigation() {
+  const [activeLv, setActiveLv] = useState('lv1');
+  const location = useLocation();
+  const navigate = useNavigate(); // 페이지 이동을 위한 훅(Hook) 선언
 
-function Navigation() {
-  const location = useLocation()
+  // 레벨 버튼 클릭 시 실행되는 함수
+  const handleLevelClick = (lvId: string) => {
+    setActiveLv(lvId); // 사이드바 메뉴 탭 변경
+
+    // 선택된 레벨의 첫 번째 Step 정보를 찾음
+    const selectedLevel = curriculum.find(c => c.id === lvId);
+    if (selectedLevel && selectedLevel.steps.length > 0) {
+      const firstStepPath = selectedLevel.steps[0].path;
+      navigate(firstStepPath); // 🚀 URL을 첫 번째 페이지로 강제 변경 (Programmatic Navigation)
+    }
+  };
 
   return (
-    <nav style={navStyle}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
-        <Link to="/" style={logoStyle}>
-          🎓 React 실습
-        </Link>
+    <nav style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#252526' }}>
+      {/* 로고 영역 */}
+      <div style={{ padding: '20px 15px', borderBottom: '1px solid #333' }}>
+        <Link to="/" style={{ color: '#61dafb', textDecoration: 'none', fontWeight: 'bold' }}>🚀 Dev-Master</Link>
+      </div>
 
-        <div style={menuStyle}>
-          {lectures.map(lecture => (
-            <Link
-              key={lecture.path}
-              to={lecture.path}
-              style={{
-                ...linkStyle,
-                ...(location.pathname === lecture.path ? activeLinkStyle : {})
-              }}
-            >
-              {lecture.title}
-              <small style={{ display: 'block', fontSize: '11px', marginTop: '2px' }}>
-                {lecture.description}
-              </small>
-            </Link>
-          ))}
-        </div>
+      {/* 레벨 선택 (Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px', padding: '10px' }}>
+        {curriculum.map((lv) => (
+          <button
+            key={lv.id}
+            onClick={() => handleLevelClick(lv.id)} // 수정된 핸들러 연결
+            style={{
+              padding: '5px', fontSize: '10px', border: 'none', cursor: 'pointer', borderRadius: '3px',
+              backgroundColor: activeLv === lv.id ? '#333' : 'transparent',
+              color: activeLv === lv.id ? '#61dafb' : '#ccc',
+            }}
+          >
+            {lv.title}
+          </button>
+        ))}
+      </div>
+
+      {/* 스텝 리스트 (세로 스크롤) */}
+      <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px' }}>
+        {curriculum.find(c => c.id === activeLv)?.steps.map((step) => (
+          <Link
+            key={step.path}
+            to={step.path}
+            style={{
+              display: 'block', padding: '10px 20px', textDecoration: 'none', fontSize: '12px', fontFamily: 'monospace',
+              backgroundColor: location.pathname === step.path ? '#1e1e1e' : 'transparent',
+              color: location.pathname === step.path ? '#61dafb' : '#999',
+              borderLeft: location.pathname === step.path ? '3px solid #61dafb' : '3px solid transparent',
+            }}
+          >
+            Step-{step.id}
+          </Link>
+        ))}
       </div>
     </nav>
-  )
+  );
 }
-
-const navStyle: React.CSSProperties = {
-  backgroundColor: '#1976d2',
-  color: 'white',
-  padding: '15px 0',
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  marginBottom: '20px'
-}
-
-const logoStyle: React.CSSProperties = {
-  color: 'white',
-  textDecoration: 'none',
-  fontSize: '24px',
-  fontWeight: 'bold',
-  marginRight: '30px'
-}
-
-const menuStyle: React.CSSProperties = {
-  display: 'flex',
-  gap: '10px',
-  marginTop: '15px',
-  flexWrap: 'wrap'
-}
-
-const linkStyle: React.CSSProperties = {
-  color: 'white',
-  textDecoration: 'none',
-  padding: '8px 16px',
-  borderRadius: '4px',
-  backgroundColor: 'rgba(255,255,255,0.1)',
-  fontSize: '14px',
-  transition: 'all 0.2s'
-}
-
-const activeLinkStyle: React.CSSProperties = {
-  backgroundColor: 'rgba(255,255,255,0.3)',
-  fontWeight: 'bold'
-}
-
-export default Navigation
