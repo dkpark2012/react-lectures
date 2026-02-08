@@ -13,7 +13,12 @@ export default function Navigation() {
   const [activeLv, setActiveLv] = useState('lv1');
   const location = useLocation();
   const navigate = useNavigate(); // 페이지 이동을 위한 훅(Hook) 선언
-
+  // 🏠 로고 클릭 시 호출될 핸들러
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // 기본 링크 동작 방지
+    setActiveLv('lv1'); // 사이드바를 '초급'으로 변경
+    navigate('/study/lecture1'); // URL을 Lecture1로 변경
+  };
   // 레벨 버튼 클릭 시 실행되는 함수
   const handleLevelClick = (lvId: string) => {
     setActiveLv(lvId); // 사이드바 메뉴 탭 변경
@@ -28,9 +33,15 @@ export default function Navigation() {
 
   return (
     <nav style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#252526' }}>
-      {/* 로고 영역 */}
+      {/* 🚀 로고 영역 수정 */}
       <div style={{ padding: '20px 15px', borderBottom: '1px solid #333' }}>
-        <Link to="/" style={{ color: '#61dafb', textDecoration: 'none', fontWeight: 'bold' }}>🚀 Dev-Master</Link>
+        <a 
+          href="/" 
+          onClick={handleLogoClick} 
+          style={{ color: '#61dafb', textDecoration: 'none', fontWeight: 'bold', cursor: 'pointer' }}
+        >
+          🚀 React Steps
+        </a>
       </div>
 
       {/* 레벨 선택 (Grid) */}
