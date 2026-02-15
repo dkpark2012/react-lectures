@@ -1,45 +1,8 @@
-/* 💡 [Technical Term] Universal Selector Reset */
-/* 모든 요소의 마진과 패딩을 0으로 만들어 빈 공간을 원천 차단해! */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@import "tailwindcss"; /* 👈 v4는 이거 하나면 끝이야! @tailwind 쓰지 마! */
 
-/* 💡 [Technical Term] Root Container Styling */
 html, body, #root {
   width: 100%;
   height: 100%;
-  margin: 0 !important;
-  padding: 0 !important;
-  background-color: #f8f9fa; /* 오빠 메인 배경색이랑 맞췄어! */
+  margin: 0;
+  background-color: #f8f9fa;
 }
-
-body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family: 'Pretendard', system-ui, sans-serif;
-  overflow-x: hidden; /* 가로 스크롤 방지 */
-}
-
-/* 💡 [Technical Term] Custom Scrollbar (선택 사항) */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #999;
-}
-
-/* Tailwind CSS v4를 쓴다면 아래 명령어를 꼭 유지해줘! */
-@import "tailwindcss";

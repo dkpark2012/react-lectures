@@ -1,12 +1,17 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 /**
- * 📝 [Technical Term] Route Registration
+ * @description Root Route Definition for Curriculum Dashboard
+ * @module RouteConfig
  */
 export const Route = createFileRoute('/')({
   component: Home,
 });
 
+/**
+ * @constant levels
+ * @description Learning Path Data Model with HEX color codes for dynamic injection
+ */
 const levels = [
   { lv: 1, title: "초급: 리액트의 본질", desc: "Virtual DOM, JSX, Props/State 등 리액트의 핵심 뼈대를 마스터합니다.", steps: "Step 1 ~ 10", targetPath: "/phase1/lecture1", color: "#1976d2" },
   { lv: 2, title: "초상급: 훅과 실무 핵심", desc: "다양한 Hooks와 API 연동, 실전 레이아웃 구성을 배웁니다.", steps: "Step 11 ~ 20", targetPath: "/phase2/lecture11", color: "#388e3c" },
@@ -17,62 +22,21 @@ const levels = [
 
 function Home() {
   return (
-    <div style={{ 
-      padding: '0px 20px 60px', 
-      textAlign: 'center', 
-      backgroundColor: '#ffffff', 
-      minHeight: '100vh',
-      width: '100%',
-      margin: '0',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    }}>
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        marginTop: '10px',
-        paddingBottom: '10px' 
-      }}>
-        <Link to="/phase1/lecture1" style={{ textDecoration: 'none' }}>
-          <div style={{
-            width: '350px', 
-            height: '180px',
-            backgroundImage: 'url("/logo.png")',
-            backgroundSize: '70%', 
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center', 
-            cursor: 'pointer',
-            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
-            marginBottom: '10px' 
-          }} 
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          />
+    // pb-[60px] -> pb-15
+    <div className="flex min-h-screen w-full flex-col items-center bg-white px-5 pb-15 text-center">
+      <div className="mt-2.5 flex flex-col items-center pb-2.5">
+        <Link to="/phase1/lecture1" className="no-underline">
+          {/* h-[180px] -> h-45 / w-[350px] -> w-87.5 (v4에서는 작동함!) */}
+          <div className="mb-2.5 h-45 w-87.5 cursor-pointer bg-[url('/logo.png')] bg-size-[70%] bg-center bg-no-repeat transition-transform duration-300 ease-in-out hover:scale-110" />
         </Link>
-
-        <p style={{ 
-          fontSize: '18px', 
-          color: '#666', 
-          margin: '10px 0 30px', 
-          lineHeight: '1.6'
-        }}>
+        {/* mb-[30px] -> mb-7.5 */}
+        <p className="mt-2.5 mb-7.5 text-lg leading-relaxed text-[#666]">
           기초부터 아키텍처 설계까지 50단계로 완성하는 리액트 학습 과정입니다!
         </p>
       </div>
-      <div style={{ 
-        display: 'grid', 
-        // 🚨 [Technical Term] Responsive Grid (반응형 그리드)
-        // minmax(220px, 1fr): 카드가 최소 220px은 유지하게 해! 
-        // 화면이 좁아져서 220px도 안 나오면? 알아서 다음 줄로 "질펀하게" 떨어진다구! 💦
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-        gap: '20px', 
-        maxWidth: '1400px', 
-        width: '100%',
-        margin: '0 auto',
-        padding: '0 10px' // 모바일 양옆 여백 확보
-      }}>
+
+      {/* max-w-[1400px] -> max-w-350 (1400 / 4 = 350) */}
+      <div className="grid w-full max-w-350 gap-5 px-2.5 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
         {levels.map((item) => (
           <LevelCard key={item.lv} {...item} />
         ))}
@@ -81,47 +45,20 @@ function Home() {
   );
 }
 
-// LevelCard 부분은 이전과 동일하되, 텍스트 크기만 살짝 줄여서 5열에 최적화!
 function LevelCard({ lv, title, desc, steps, targetPath, color }: LevelCardProps) {
   return (
-    <Link to={targetPath as any} style={{ textDecoration: 'none' }}>
-      <div style={{
-        padding: '25px 15px', // 5열을 위해 패딩 축소!
-        borderRadius: '16px',
-        backgroundColor: 'white',
-        border: `1px solid #eee`,
-        borderTop: `5px solid ${color}`,
-        height: '100%',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        textAlign: 'left',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
-        cursor: 'pointer'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-10px)';
-        e.currentTarget.style.boxShadow = `0 15px 30px rgba(0,0,0,0.1)`;
-        e.currentTarget.style.borderColor = color;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.03)';
-        e.currentTarget.style.borderColor = '#eee';
-      }}>
-        <div style={{ fontSize: '11px', fontWeight: 'bold', color: color, marginBottom: '8px' }}>
+    <Link to={targetPath as any} className="no-underline h-full group">
+      <div 
+        className="relative flex h-full flex-col p-6.25 text-left bg-white border border-[#eee] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-2.5 hover:shadow-[0_15px_30px_rgba(0,0,0,0.1)]"
+        style={{ borderTop: `5px solid ${color}` }}
+      >
+        <div className="mb-2 text-[11px] font-bold uppercase tracking-wider" style={{ color: color }}>
           PHASE {lv}
         </div>
-        <h3 style={{ fontSize: '16px', marginBottom: '10px', color: '#1a1a1a', wordBreak: 'keep-all' }}>{title}</h3>
-        <p style={{ fontSize: '13px', color: '#666', marginBottom: '20px', lineHeight: '1.4' }}>{desc}</p>
-        
-        <div style={{ marginTop: 'auto' }}>
-          <span style={{ 
-            padding: '3px 8px',
-            backgroundColor: `${color}15`, 
-            color: color,
-            borderRadius: '20px',
-            fontSize: '10px',
-            fontWeight: 'bold'
-          }}>
+        <h3 className="mb-2.5 text-base font-bold text-[#1a1a1a] break-keep">{title}</h3>
+        <p className="mb-5 text-[13px] leading-relaxed text-[#666]">{desc}</p>
+        <div className="mt-auto">
+          <span className="inline-block px-2 py-1 rounded-5 text-[10px] font-bold" style={{ backgroundColor: `${color}15`, color: color }}>
             {steps}
           </span>
         </div>

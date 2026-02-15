@@ -1,19 +1,29 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
-import path from 'path' // 💡 [Technical Term] Node.js Path Module: 파일 경로를 계산해주는 도구예요.
+import tailwindcss from '@tailwindcss/vite' // 📝 [Technical Term] Tailwind CSS v4 Engine for Vite Integration
+import path from 'path'
 
+/**
+ * @description Vite Configuration for Enterprise React Application
+ * @module ViteConfig
+ */
 export default defineConfig({
   plugins: [
+    /** @plugin Tailwind CSS v4 */
+    tailwindcss(), 
+    /** @plugin TanStack Router with Code Splitting Optimization */
     tanstackRouter({
       autoCodeSplitting: true, 
     }),
+    /** @plugin React Fast Refresh and Optimization */
     react(),
   ],
   resolve: {
+    /** * @description Alias Mapping for Absolute Paths 
+     * Provides centralized path management and improves import readability
+     */
     alias: {
-      // 💡 [Technical Term] Alias Mapping (별칭 매핑)
-      // '@'는 src 폴더 전체, '@features'는 그 안의 features 폴더만 쏙 가리키게 만들었어요.
       '@': path.resolve(__dirname, './src'),
       '@features': path.resolve(__dirname, './src/features'),
       '@components': path.resolve(__dirname, './src/components'),
