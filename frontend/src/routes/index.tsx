@@ -1,17 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-/**
- * @description Root Route Definition for Curriculum Dashboard
- * @module RouteConfig
- */
 export const Route = createFileRoute('/')({
   component: Home,
 });
 
-/**
- * @constant levels
- * @description Learning Path Data Model with HEX color codes for dynamic injection
- */
 const levels = [
   { lv: 1, title: "초급: 리액트의 본질", desc: "Virtual DOM, JSX, Props/State 등 리액트의 핵심 뼈대를 마스터합니다.", steps: "Step 1 ~ 10", targetPath: "/phase1/lecture1", color: "#1976d2" },
   { lv: 2, title: "초상급: 훅과 실무 핵심", desc: "다양한 Hooks와 API 연동, 실전 레이아웃 구성을 배웁니다.", steps: "Step 11 ~ 20", targetPath: "/phase2/lecture11", color: "#388e3c" },
@@ -22,20 +14,27 @@ const levels = [
 
 function Home() {
   return (
-    // pb-[60px] -> pb-15
     <div className="flex min-h-screen w-full flex-col items-center bg-white px-5 pb-15 text-center">
       <div className="mt-2.5 flex flex-col items-center pb-2.5">
         <Link to="/phase1/lecture1" className="no-underline">
-          {/* h-[180px] -> h-45 / w-[350px] -> w-87.5 (v4에서는 작동함!) */}
           <div className="mb-2.5 h-45 w-87.5 cursor-pointer bg-[url('/logo.png')] bg-size-[70%] bg-center bg-no-repeat transition-transform duration-300 ease-in-out hover:scale-110" />
         </Link>
-        {/* mb-[30px] -> mb-7.5 */}
-        <p className="mt-2.5 mb-7.5 text-lg leading-relaxed text-[#666]">
-          기초부터 아키텍처 설계까지 50단계로 완성하는 리액트 학습 과정입니다!
-        </p>
+        
+        <div className="mt-4 mb-12 flex flex-col items-center gap-1"> {/* 👈 gap으로 간격 조절! */}
+          <h1 className="text-xl font-black tracking-tighter text-gray-400 leading-tight">
+            기초부터 아키텍처 설계까지
+          </h1>
+          
+          {/* <br/> 은 당장 지워버려! */}
+          
+          <h1 className="text-3xl font-black tracking-tighter text-gray-400 leading-tight">
+            <span className="bg-linear-to-r from-[#1976d2] via-[#388e3c] to-[#d32f2f] bg-clip-text text-transparent">
+              50단계로 완성하는 리액트 여정
+            </span>
+          </h1>
+        </div>
       </div>
 
-      {/* max-w-[1400px] -> max-w-350 (1400 / 4 = 350) */}
       <div className="grid w-full max-w-350 gap-5 px-2.5 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
         {levels.map((item) => (
           <LevelCard key={item.lv} {...item} />
