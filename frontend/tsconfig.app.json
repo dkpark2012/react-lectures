@@ -20,7 +20,18 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* 🚀 [Technical Term] Path Mapping (경로 매핑) 추가 */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@features/*": ["src/features/*"],
+      "@components/*": ["src/components/*"],
+      "@study/*": ["src/study/*"],
+      "@constants/*": ["src/constants/*"],
+      "@data/*": ["src/data/*"]
+    }
   },
   "include": ["src"]
 }

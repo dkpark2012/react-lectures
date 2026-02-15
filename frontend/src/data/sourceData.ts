@@ -1,40 +1,54 @@
-// src/data/sourceData.ts
-import { PUBLISH_COUNT } from '../constants/config';
+import { PUBLISH_COUNT } from '@constants/config';
+import React from 'react';
 
-// ?raw 쿼리를 통해 실제 코드 원문을 가져옵니다.
-const modules = import.meta.glob('../pages/Lecture*.tsx', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
+export interface SourceFile {
+  name: string;
+  code: string;
+  content?: React.ComponentType; 
+}
+
+// 1. 강의 파일들만 타이트하게 긁어오기
+const rawModules = import.meta.glob('../features/phase*/*.tsx', { 
+  query: '?raw', 
+  import: 'default', 
+  eager: true 
 }) as Record<string, string>;
 
-import appCode from '../App.tsx?raw';
-import homeCode from '../pages/Home.tsx?raw';
-import navigationCode from '../components/Navigation.tsx?raw';
+const componentModules = import.meta.glob('../features/phase*/*.tsx', { 
+  eager: true 
+}) as Record<string, any>; 
 
-const commonFiles = [
-  { name: "App.tsx", code: appCode },
-  { name: "Home.tsx", code: homeCode },
-  { name: "Navigation.tsx", code: navigationCode },
-];
+export const sourceData: Record<string, SourceFile[]> = {};
 
-export const sourceData: Record<string, { name: string; code: string }[]> = {};
-
-Object.entries(modules).forEach(([path, code]) => {
-  // 경로: ../pages/Lecture1.tsx -> 파일명: Lecture1.tsx
+Object.entries(rawModules).forEach(([path, code]) => {
   const fileName = path.split('/').pop() || ''; 
-  const match = fileName.match(/\d+/);
-  const lectureNum = match ? parseInt(match[0], 10) : 0;
+  const lectureMatch = fileName.match(/lecture(\d+)/);
+  const lectureNum = lectureMatch ? parseInt(lectureMatch[1], 10) : 0;
 
   if (lectureNum > 0 && lectureNum <= PUBLISH_COUNT) {
-    const routeKey = `/study/lecture${lectureNum}`;
+    const phaseMatch = path.match(/phase(\d+)/);
+    const phaseNum = phaseMatch ? phaseMatch[1] : '1';
     
-    // 핵심: 기존 배열을 참조하지 않고 매번 새 배열을 생성하여 할당
-    sourceData[routeKey] = [
-      ...commonFiles,
-      { name: fileName, code: String(code) }
+    // 💡 주소창 매칭용 키 생성
+    const routeKey = `/phase${phaseNum}/lecture${lectureNum}`;
+    
+    // 해당 모듈에서 컴포넌트(함수) 추출
+    const module = componentModules[path];
+    const MainComponent = Object.values(module).find(val => typeof val === 'function') as React.ComponentType;
+
+    /**
+     * 🚀 오빠 요청대로 lecture.tsx 파일 하나만 담아!
+     * 이렇게 하면 LectureComponent에서도 0번 인덱스로 바로 찾을 수 있어.
+     */
+    const lectureData = [
+      { 
+        name: fileName, 
+        code: String(code), 
+        content: MainComponent 
+      }
     ];
+
+    sourceData[routeKey] = lectureData;
+    sourceData[routeKey.substring(1)] = lectureData; // 슬래시 없는 버전
   }
 });
-
-console.log("✅ [SourceData] 로드된 경로 목록:", Object.keys(sourceData));

@@ -1,4 +1,3 @@
-// src/components/CodeViewer.tsx
 import { useState, useEffect, useRef } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -12,24 +11,21 @@ interface CodeViewerProps {
   files?: CodeFile[];
 }
 
-export default function CodeViewer({ files = [] }: CodeViewerProps) {
+export function CodeViewer({ files = [] }: CodeViewerProps) {
   const [activeFileName, setActiveFileName] = useState<string>('');
-  const [displaySize, setDisplaySize] = useState(13);
+  const [displaySize, setDisplaySize] = useState(12.2);
   const sizeRef = useRef(13);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 1️⃣ 탭 정렬 로직 (Lecture 파일을 최우선으로)
   const sortedFiles = [...files].sort((a, b) => {
-    const isALecture = a.name.includes('Lecture');
-    const isBLecture = b.name.includes('Lecture');
-
+    const isALecture = a.name.includes('lecture');
+    const isBLecture = b.name.includes('lecture');
     if (isALecture && !isBLecture) return -1;
     if (!isALecture && isBLecture) return 1;
-
-    const priority = ['App.tsx', 'Navigation.tsx', 'Home.tsx', 'Main.tsx'];
+    const priority = ['Navigation.tsx', 'Home.tsx', 'main.tsx'];
     const pA = priority.indexOf(a.name) === -1 ? 99 : priority.indexOf(a.name);
     const pB = priority.indexOf(b.name) === -1 ? 99 : priority.indexOf(b.name);
-    
     return pA - pB;
   });
 
@@ -44,7 +40,6 @@ export default function CodeViewer({ files = [] }: CodeViewerProps) {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
     const handleWheel = (e: any) => {
       if (e.ctrlKey) {
         e.preventDefault();
@@ -54,7 +49,6 @@ export default function CodeViewer({ files = [] }: CodeViewerProps) {
         setDisplaySize(nextSize);
       }
     };
-
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
   }, []);
@@ -79,9 +73,19 @@ export default function CodeViewer({ files = [] }: CodeViewerProps) {
             onClick={() => setActiveFileName(file.name)}
             style={{
               ...tabStyle,
+              // 🚨 A/S 포인트: 높이를 결정하는 padding과 line-height 조절
+              padding: '1px 16px', // 상하 8px, 좌우 16px로 좁혀서 타이틀에 딱 붙게!
+              height: 'auto',      // 고정 높이 대신 내용물에 맞게 (또는 약 35px-40px 추천)
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '13px',    // 타이틀 폰트 크기 기준
+              cursor: 'pointer',
+              
               backgroundColor: activeFileName === file.name ? '#1e1e1e' : '#2d2d2d',
               color: activeFileName === file.name ? '#61dafb' : '#969696',
               borderTop: activeFileName === file.name ? '2px solid #61dafb' : '2px solid transparent',
+              transition: 'all 0.2s ease', // 누를 때 부드럽게 반응하도록!
             }}
           >
             {file.name}
@@ -89,25 +93,24 @@ export default function CodeViewer({ files = [] }: CodeViewerProps) {
         ))}
       </div>
 
-      {/* 💻 코드 출력 영역 */}
-      <div style={{ flex: 1, overflow: 'auto' }}>
+      {/* 💻 코드 출력 영역 - 💡 스크롤 간섭 해결을 위해 height 설정 조정 */}
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <SyntaxHighlighter
           language="tsx"
           style={vscDarkPlus as any}
-          // 💡 [수정] lineProps에 whiteSpace와 wordBreak를 추가하여 자동 줄바꿈을 복구했습니다.
           lineProps={{
             style: { 
               display: 'block', 
               width: '100%', 
               padding: '0', 
-              whiteSpace: 'pre-wrap', // 자동 줄바꿈 적용 (Wrap)
-              wordBreak: 'break-all'   // 단어 깨짐 방지
+              whiteSpace: 'pre-wrap', 
+              wordBreak: 'break-all'
             }
           }}
           codeTagProps={{
             style: {
               fontSize: `${displaySize}px`,
-              lineHeight: '1.2', 
+              lineHeight: '1.4', 
               fontFamily: 'monospace'
             }
           } as any}
@@ -115,8 +118,10 @@ export default function CodeViewer({ files = [] }: CodeViewerProps) {
             margin: 0,
             padding: '10px',
             backgroundColor: '#1e1e1e',
-            height: '100%',
-            overflowX: 'hidden', // 가로 스크롤을 막아야 줄바꿈이 일어납니다.
+            flex: 1,           // 💡 고정 높이 대신 남은 공간을 다 쓰게 함
+            overflowY: 'auto', // 💡 여기서만 스크롤이 생기도록 유도
+            overflowX: 'hidden',
+            border: 'none'
           }}
           showLineNumbers={true}
           wrapLines={true} 
@@ -124,16 +129,10 @@ export default function CodeViewer({ files = [] }: CodeViewerProps) {
           {String(activeFile?.code || '')}
         </SyntaxHighlighter>
       </div>
-
-      {/* 하단 상태바 */}
-      <div style={statusBarStyle}>
-        Size: {displaySize}px | Line: 1.2 | Wrap: ON | Ctrl + Scroll
-      </div>
     </div>
   );
 }
 
-// 🎨 스타일 정의
 const containerStyle: React.CSSProperties = {
   display: 'flex', flexDirection: 'column', height: '100%',
   backgroundColor: '#1e1e1e', position: 'relative', overflow: 'hidden'
@@ -147,9 +146,4 @@ const tabBarStyle: React.CSSProperties = {
 const tabStyle: React.CSSProperties = {
   padding: '10px 15px', fontSize: '12px', cursor: 'pointer',
   whiteSpace: 'nowrap', borderRight: '1px solid #1e1e1e', transition: '0.2s'
-};
-
-const statusBarStyle: React.CSSProperties = {
-  padding: '4px 12px', backgroundColor: '#007acc', color: '#fff',
-  fontSize: '10px', textAlign: 'right', fontWeight: '500'
 };

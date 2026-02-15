@@ -6,14 +6,19 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Bundler mode */
+    /* Bundler mode: 최신 Vite 환경에서 모듈을 찾는 방식입니다 */
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
 
-    /* Linting */
+    /* 문제가 되었던 "@tanstack/router-plugin"을 types에서 제거했습니다. 
+       대신 node 타입만 남겨서 Vite 자체 설정 파일 인식에 집중합니다.
+    */
+    "types": [],
+    
+    /* Linting: 코드 품질 검사 설정 */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

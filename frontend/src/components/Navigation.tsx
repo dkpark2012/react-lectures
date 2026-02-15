@@ -1,59 +1,83 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // useNavigate 추가
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 
+/**
+ * 📚 [Technical Term] Curriculum Metadata (커리큘럼 메타데이터)
+ */
 const curriculum = [
-  { id: 'lv1', title: '초급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 1, path: `/study/lecture${i + 1}` })) },
-  { id: 'lv2', title: '초상급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 11, path: `/study/lecture${i + 11}` })) },
-  { id: 'lv3', title: '중급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 21, path: `/study/lecture${i + 21}` })) },
-  { id: 'lv4', title: '중상급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 31, path: `/study/lecture${i + 31}` })) },
-  { id: 'lv5', title: '고급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 41, path: `/study/lecture${i + 41}` })) },
+  { id: 'lv1', title: '초급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 1, path: `/phase1/lecture${i + 1}` })) },
+  { id: 'lv2', title: '초상급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 11, path: `/phase2/lecture${i + 11}` })) },
+  { id: 'lv3', title: '중급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 21, path: `/phase3/lecture${i + 21}` })) },
+  { id: 'lv4', title: '중상급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 31, path: `/phase4/lecture${i + 31}` })) },
+  { id: 'lv5', title: '고급', steps: Array.from({length: 10}, (_, i) => ({ id: i + 41, path: `/phase5/lecture${i + 41}` })) },
 ];
 
-export default function Navigation() {
+export function Navigation() {
   const [activeLv, setActiveLv] = useState('lv1');
   const location = useLocation();
-  const navigate = useNavigate(); // 페이지 이동을 위한 훅(Hook) 선언
-  // 🏠 로고 클릭 시 호출될 핸들러
-  const handleLogoClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // 기본 링크 동작 방지
-    setActiveLv('lv1'); // 사이드바를 '초급'으로 변경
-    navigate('/study/lecture1'); // URL을 Lecture1로 변경
-  };
-  // 레벨 버튼 클릭 시 실행되는 함수
-  const handleLevelClick = (lvId: string) => {
-    setActiveLv(lvId); // 사이드바 메뉴 탭 변경
+  const navigate = useNavigate();
 
-    // 선택된 레벨의 첫 번째 Step 정보를 찾음
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setActiveLv('lv1');
+    navigate({ to: '/' });
+  };
+
+  const handleLevelClick = (lvId: string) => {
+    setActiveLv(lvId);
     const selectedLevel = curriculum.find(c => c.id === lvId);
     if (selectedLevel && selectedLevel.steps.length > 0) {
       const firstStepPath = selectedLevel.steps[0].path;
-      navigate(firstStepPath); // 🚀 URL을 첫 번째 페이지로 강제 변경 (Programmatic Navigation)
+      navigate({ to: firstStepPath as any }); 
     }
   };
 
   return (
-    <nav style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#252526' }}>
-      {/* 🚀 로고 영역 수정 */}
-      <div style={{ padding: '20px 15px', borderBottom: '1px solid #333' }}>
+    // 💡 부모 컨테이너에서 너비를 제어할 수 있도록 width는 100%로 유지하고 내부 여백을 조절했어!
+    <nav style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100%', 
+      backgroundColor: '#1e1e1e', // 조금 더 어두운 톤으로 변경
+      borderRight: '1px solid #333'
+    }}>
+      {/* 로고 영역: 텍스트 크기를 줄여 슬림함 유지 */}
+      <div style={{ padding: '15px 10px', borderBottom: '1px solid #333', textAlign: 'center' }}>
         <a 
           href="/" 
           onClick={handleLogoClick} 
-          style={{ color: '#61dafb', textDecoration: 'none', fontWeight: 'bold', cursor: 'pointer' }}
+          style={{ 
+            color: '#61dafb', 
+            textDecoration: 'none', 
+            fontWeight: 'bold', 
+            fontSize: '13px', // 폰트 사이즈 축소
+            letterSpacing: '-0.5px' 
+          }}
         >
-          🚀 React Steps
+          React50
         </a>
       </div>
 
-      {/* 레벨 선택 (Grid) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5px', padding: '10px' }}>
+      {/* 레벨 선택: 2열 그리드를 유지하되 여백 최적화 */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '1fr 1fr', 
+        gap: '4px', 
+        padding: '8px' 
+      }}>
         {curriculum.map((lv) => (
           <button
             key={lv.id}
-            onClick={() => handleLevelClick(lv.id)} // 수정된 핸들러 연결
+            onClick={() => handleLevelClick(lv.id)}
             style={{
-              padding: '5px', fontSize: '10px', border: 'none', cursor: 'pointer', borderRadius: '3px',
-              backgroundColor: activeLv === lv.id ? '#333' : 'transparent',
-              color: activeLv === lv.id ? '#61dafb' : '#ccc',
+              padding: '4px 2px', 
+              fontSize: '10px', 
+              border: '1px solid transparent', 
+              cursor: 'pointer', 
+              borderRadius: '4px',
+              backgroundColor: activeLv === lv.id ? '#007acc' : '#2d2d2d', // VS Code 스타일 포인트 컬러
+              color: activeLv === lv.id ? '#fff' : '#aaa',
+              transition: 'all 0.1s'
             }}
           >
             {lv.title}
@@ -61,20 +85,33 @@ export default function Navigation() {
         ))}
       </div>
 
-      {/* 스텝 리스트 (세로 스크롤) */}
-      <div style={{ flex: 1, overflowY: 'auto', marginTop: '10px' }}>
+      {/* 스텝 리스트 영역: [Technical Term] Scrollbar Styling (스크롤바 스타일링) 필요 */}
+      <div style={{ 
+        flex: 1, 
+        overflowY: 'auto', 
+        marginTop: '5px',
+        scrollbarWidth: 'thin', // 파이어폭스용
+        scrollbarColor: '#333 transparent' 
+      }}>
         {curriculum.find(c => c.id === activeLv)?.steps.map((step) => (
           <Link
             key={step.path}
-            to={step.path}
+            to={step.path as any}
             style={{
-              display: 'block', padding: '10px 20px', textDecoration: 'none', fontSize: '12px', fontFamily: 'monospace',
-              backgroundColor: location.pathname === step.path ? '#1e1e1e' : 'transparent',
-              color: location.pathname === step.path ? '#61dafb' : '#999',
-              borderLeft: location.pathname === step.path ? '3px solid #61dafb' : '3px solid transparent',
+              display: 'flex',
+              alignItems: 'center',
+              padding: '8px 15px', // 좌우 패딩 축소
+              textDecoration: 'none', 
+              fontSize: '11px', 
+              fontFamily: 'Inter, sans-serif',
+              backgroundColor: location.pathname === step.path ? '#2a2d2e' : 'transparent',
+              color: location.pathname === step.path ? '#fff' : '#969696',
+              borderLeft: location.pathname === step.path ? '2px solid #007acc' : '2px solid transparent',
+              marginBottom: '1px'
             }}
           >
-            Step-{step.id}
+             <span style={{ opacity: 0.5, marginRight: '6px' }}>•</span>
+             Step-{step.id}
           </Link>
         ))}
       </div>
