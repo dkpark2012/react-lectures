@@ -26,7 +26,7 @@ function Home() {
         🚀 React Master Roadmap
       </h1>
       <p style={{ fontSize: '18px', color: '#666', marginBottom: '50px' }}>
-        기초부터 아키텍처 설계까지, 50단계로 완성하는 리액트 전문가 과정
+        기초부터 아키텍처 설계까지 50단계로 완성하는 리액트 전문가 과정
       </p>
 
       <div style={{ 
@@ -114,5 +114,3 @@ function LevelCard({ lv, title, desc, steps, path, color }: { lv: number, title:
     </Link>
   );
 }
-
-export  Home;

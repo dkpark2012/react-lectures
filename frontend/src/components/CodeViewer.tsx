@@ -23,7 +23,7 @@ export function CodeViewer({ files = [] }: CodeViewerProps) {
     const isBLecture = b.name.includes('lecture');
     if (isALecture && !isBLecture) return -1;
     if (!isALecture && isBLecture) return 1;
-    const priority = ['Navigation.tsx', 'Home.tsx', 'main.tsx'];
+    const priority = ['Navigation.tsx', 'main.tsx'];
     const pA = priority.indexOf(a.name) === -1 ? 99 : priority.indexOf(a.name);
     const pB = priority.indexOf(b.name) === -1 ? 99 : priority.indexOf(b.name);
     return pA - pB;

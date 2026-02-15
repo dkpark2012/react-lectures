@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router'
-import { Navigation } from '@components/Navigation' 
-import { CodeViewer } from '@components/CodeViewer'
+import { Navigation } from '@/components/Navigation' 
+import { CodeViewer } from '@/components/CodeViewer'
 import { sourceData } from '@data/sourceData'
 
 export const Route = createFileRoute('/_features')({
