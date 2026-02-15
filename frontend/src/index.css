@@ -1,54 +1,45 @@
-/* 💡 [Technical Term] Global Reset for Window Scrolling */
-:root {
-  font-family: 'Pretendard', 'Inter', system-ui, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: dark;
-  background-color: #1a1a1a;
-  color: #e0e0e0;
-}
-
-/* 💡 오빠! 여기가 핵심이야. 100vh랑 overflow: hidden을 당장 찢어버렸어! */
-body {
+/* 💡 [Technical Term] Universal Selector Reset */
+/* 모든 요소의 마진과 패딩을 0으로 만들어 빈 공간을 원천 차단해! */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+/* 💡 [Technical Term] Root Container Styling */
+html, body, #root {
   width: 100%;
-  min-height: 100vh; /* 💡 최소 높이만 확보하고 */
-  display: block;
-  overflow-x: hidden;
-  overflow-y: visible; /* 💡 윈도우 스크롤아, 맘껏 튀어나와라! 앙! */
+  height: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #f8f9fa; /* 오빠 메인 배경색이랑 맞췄어! */
 }
 
-/* 🟢 [Technical Term] Fluid Lecture Container (유동적 컨테이너) */
-.lecture-container {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #2c3e50;
-  padding: 40px;
-  background-color: #ffffff;
-  /* 💡 오빠! height: 100%랑 overflow-y: auto를 삭제했어. 
-     그래야 자식인 카드가 길어질 때 윈도우가 같이 늘어나! */
-  min-height: 100vh; 
-  height: auto; 
-  overflow: visible; 
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Pretendard', system-ui, sans-serif;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
 }
 
-/* 나머지 스타일은 그대로 유지해도 돼! */
-.lecture-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1a73e8;
-  margin-bottom: 24px;
-  border-bottom: 2px solid #f0f4f8;
-  padding-bottom: 12px;
+/* 💡 [Technical Term] Custom Scrollbar (선택 사항) */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* ... (나머지 버튼, 로그 섹션 스타일 등등) ... */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
 
-/* 💡 스크롤바 커스텀도 브라우저 전체에 적용되게 놔둘게! */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #999; }
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
 
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Tailwind CSS v4를 쓴다면 아래 명령어를 꼭 유지해줘! */
 @import "tailwindcss";

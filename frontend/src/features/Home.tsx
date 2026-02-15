@@ -21,7 +21,7 @@ const levels = [
 
 function Home() {
   return (
-    <div style={{ padding: '60px 20px', textAlign: 'center', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+    <div style={{ padding: '0px 20px 60px', textAlign: 'center', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
       <h1 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '15px', color: '#1a1a1a' }}>
         🚀 React Master Roadmap
       </h1>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // 🚀 useEffect 추가!
 import { Link, useLocation, useNavigate } from '@tanstack/react-router';
 
 /**
@@ -17,11 +17,17 @@ export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogoClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setActiveLv('lv1');
-    navigate({ to: '/' });
-  };
+  // 🚨 [Technical Term] State Synchronization (상태 동기화)
+  // 주소창의 주소(/phase2/...)를 보고 activeLv('lv2')를 자동으로 맞춰주는 로직이야! 💋
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const foundLv = curriculum.find(lv => 
+      lv.steps.some(step => step.path === currentPath)
+    );
+    if (foundLv) {
+      setActiveLv(foundLv.id);
+    }
+  }, [location.pathname]); // 💡 주소가 바뀔 때마다 실행!
 
   const handleLevelClick = (lvId: string) => {
     setActiveLv(lvId);
@@ -33,32 +39,39 @@ export function Navigation() {
   };
 
   return (
-    // 💡 부모 컨테이너에서 너비를 제어할 수 있도록 width는 100%로 유지하고 내부 여백을 조절했어!
     <nav style={{ 
       display: 'flex', 
       flexDirection: 'column', 
       height: '100%', 
-      backgroundColor: '#1e1e1e', // 조금 더 어두운 톤으로 변경
+      backgroundColor: '#000', 
       borderRight: '1px solid #333'
     }}>
-      {/* 로고 영역: 텍스트 크기를 줄여 슬림함 유지 */}
-      <div style={{ padding: '15px 10px', borderBottom: '1px solid #333', textAlign: 'center' }}>
-        <a 
-          href="/" 
-          onClick={handleLogoClick} 
-          style={{ 
-            color: '#61dafb', 
-            textDecoration: 'none', 
-            fontWeight: 'bold', 
-            fontSize: '13px', // 폰트 사이즈 축소
-            letterSpacing: '-0.5px' 
-          }}
-        >
-          React50
-        </a>
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center',
+        marginTop: '10px',
+        paddingBottom: '10px' 
+      }}>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <div style={{
+            width: '120px', 
+            height: '80px',
+            backgroundImage: 'url("/logo_sub.png")',
+            backgroundSize: '100%', 
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center', 
+            margin: '0 auto',
+            cursor: 'pointer',
+            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', 
+            marginBottom: '10px' 
+          }} 
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          />
+        </Link>
       </div>
 
-      {/* 레벨 선택: 2열 그리드를 유지하되 여백 최적화 */}
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: '1fr 1fr', 
@@ -75,7 +88,7 @@ export function Navigation() {
               border: '1px solid transparent', 
               cursor: 'pointer', 
               borderRadius: '4px',
-              backgroundColor: activeLv === lv.id ? '#007acc' : '#2d2d2d', // VS Code 스타일 포인트 컬러
+              backgroundColor: activeLv === lv.id ? '#007acc' : '#2d2d2d',
               color: activeLv === lv.id ? '#fff' : '#aaa',
               transition: 'all 0.1s'
             }}
@@ -85,12 +98,11 @@ export function Navigation() {
         ))}
       </div>
 
-      {/* 스텝 리스트 영역: [Technical Term] Scrollbar Styling (스크롤바 스타일링) 필요 */}
       <div style={{ 
         flex: 1, 
         overflowY: 'auto', 
         marginTop: '5px',
-        scrollbarWidth: 'thin', // 파이어폭스용
+        scrollbarWidth: 'thin',
         scrollbarColor: '#333 transparent' 
       }}>
         {curriculum.find(c => c.id === activeLv)?.steps.map((step) => (
@@ -100,7 +112,7 @@ export function Navigation() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              padding: '8px 15px', // 좌우 패딩 축소
+              padding: '8px 15px',
               textDecoration: 'none', 
               fontSize: '11px', 
               fontFamily: 'Inter, sans-serif',
