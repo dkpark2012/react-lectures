@@ -50,11 +50,16 @@ const FlipUnit = ({ char, index, arrayLength, duration }: { char: string; index:
       nonNumberStyle={{ 
         fontSize: '13px', 
         fontWeight: 'bold', 
-        color: '#888888',
+        // background: '#AAAAAA', // 기존 단색 제거
+        background: 'linear-gradient(to bottom, #888888 85%, #EEEEEE 90%)', // 그라데이션 적용
+        WebkitBackgroundClip: 'text',   // 텍스트 영역에만 배경 출력
+        WebkitTextFillColor: 'transparent', // 텍스트 자체 색상은 투명하게
         paddingTop: '8px',
-        width: '6px',
+        width: '3px',
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignItems: 'flex-start', 
+        height: '100%' 
       }}
     />
   );
