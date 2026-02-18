@@ -8,63 +8,6 @@ export const Route = createFileRoute('/')({
   component: Home,
 });
 
-// 설계 고수님의 명세: 자릿수별 독립 제어를 위한 래퍼 컴포넌트
-const FlipUnit = ({ char, index, arrayLength, duration }: { char: string; index: number; arrayLength: number; duration: number }) => {
-  // [설계 핵심] 모든 시작점은 "0"으로 통일하여 이동 거리를 상수로 고정
-  const [displayNum, setDisplayNum] = useState("0");
-
-  useEffect(() => {
-    if (char === ",") {
-      setDisplayNum(",");
-      return;
-    }
-
-    // 1단계: 어떤 값이든 일단 0으로 돌려놓음 (리듬 동기화)
-    setDisplayNum("0");
-
-    // 2단계: 설정된 duration(0.5초) 후에 실제 값으로 Landing
-    const timer = setTimeout(() => {
-      setDisplayNum(char);
-    }, duration * 1000);
-
-    return () => clearTimeout(timer);
-  }, [char, duration]);
-
-  return (
-    <FlipNumbers
-      height={20}
-      width={char === ',' ? 6 : 18}
-      color="#444444"
-      background="transparent"
-      play
-      perspective={500}
-      numbers={displayNum}
-      duration={duration} // 고수님이 정의한 고정 0.5초 정속 사용
-      delay={(arrayLength - 1 - index) * 0.5}
-      numberStyle={{ 
-        fontFamily: 'JetBrains Mono',
-        fontSize: '16px', 
-        fontWeight: 'bold',
-        WebkitFontSmoothing: 'antialiased'
-      }}
-      nonNumberStyle={{ 
-        fontSize: '13px', 
-        fontWeight: 'bold', 
-        // background: '#AAAAAA', // 기존 단색 제거
-        background: 'linear-gradient(to bottom, #888888 85%, #EEEEEE 90%)', // 그라데이션 적용
-        WebkitBackgroundClip: 'text',   // 텍스트 영역에만 배경 출력
-        WebkitTextFillColor: 'transparent', // 텍스트 자체 색상은 투명하게
-        paddingTop: '8px',
-        width: '3px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start', 
-        height: '100%' 
-      }}
-    />
-  );
-};
-
 const levels = [
   { lv: 1, title: "초급: React의 본질", desc: "Virtual DOM, JSX, Props/State 등 React의 핵심 뼈대를 마스터합니다.", steps: "Step 1 ~ 10", targetPath: "/phase1/lecture1", color: "#1976d2" },
   { lv: 2, title: "초상급: Hooks & API", desc: "다양한 Hooks와 API 연동, 실전 Layout 구성을 배웁니다.", steps: "Step 11 ~ 20", targetPath: "/phase2/lecture11", color: "#388e3c" },
@@ -75,7 +18,7 @@ const levels = [
 
 function Home() {
   const [count, setCount] = useState<number | null>(null);
-  const isIncreased = useRef(false); 
+  const isIncreased = useRef(false);
 
   useEffect(() => {
     const visitorRef = ref(db, 'visitor_count');
@@ -88,8 +31,7 @@ function Home() {
     });
 
     if (!isIncreased.current) {
-      isIncreased.current = true; 
-
+      isIncreased.current = true;
       runTransaction(visitorRef, (current) => {
         const currentVal = (current === null) ? 0 : Number(current);
         return currentVal + 1;
@@ -97,46 +39,107 @@ function Home() {
         if (result.committed) {
           setCount(result.snapshot.val());
         }
-      }).catch((err) => {
-        console.error("Counter Transaction Failed:", err);
       });
     }
 
-    return () => unsubscribe();
+    // 8초마다 리랜딩 효과를 위해 상태 초기화 후 복구
+    const interval = setInterval(() => {
+      setCount(null);
+      setTimeout(() => {
+        const visitorRefInner = ref(db, 'visitor_count');
+        onValue(visitorRefInner, (snapshot) => {
+          setCount(snapshot.val());
+        }, { onlyOnce: true });
+      }, 50);
+    }, 6000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(interval);
+    };
   }, []);
 
-  const formattedArray = (count !== null 
+  // 문자열을 통째로 생성 (루프 제거를 위해 formattedArray 대신 String 사용)
+  const formattedString = count !== null 
     ? count.toString().padStart(9, '0').replace(/\B(?=(\d{3})+(?!\d))/g, ",") 
-    : "000,000,000"
-  ).split("");
+    : "000,000,000";
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-white px-5 pb-15 text-center">
       <div className="mt-2.5 flex flex-col items-center pb-2.5">
         <Link to="/phase1/lecture1" className="no-underline">
           <div className="mb-2.5 h-45 w-87.5 cursor-pointer bg-[url('/logo.png')] bg-size-[70%] bg-center bg-no-repeat transition-transform duration-300 ease-in-out hover:scale-110" />
-        </Link>        
+        </Link>
         <div className="mt-1 mb-2 flex flex-col items-center gap-1">
           <h1 className="text-xl font-black tracking-tighter text-gray-400 leading-tight">
             기초부터 아키텍처 설계까지
-          </h1>          
+          </h1>
           <h1 className="text-3xl font-black tracking-tighter text-gray-400 leading-tight">
             <span className="bg-linear-to-r from-[#1976d2] via-[#388e3c] to-[#d32f2f] bg-clip-text text-transparent">
               50 Steps 로 완성하는 React 길잡이
             </span>
           </h1>
-          <div className="mt-1 flex flex-col items-center">
-            <div className="flex items-center">
-              {/* 고수님의 루프 로직: 각 자릿수를 FlipUnit으로 독립 렌더링 */}
-              {formattedArray.map((char, index) => (
-                <FlipUnit 
-                  key={`${index}-${char}`} 
-                  char={char} 
-                  index={index} 
-                  arrayLength={formattedArray.length}
-                  duration={0.5} 
-                />
-              ))}
+          <div className="mt-1 flex flex-col items-center w-full">
+            {/* 숫자를 정중앙에 배치하고 툴팁은 absolute로 우측에 띄움 */}
+            <div className="relative flex items-center justify-center w-full min-h-[30px]">
+              
+              {/* 루프 제거: 문자열 통째로 FlipNumbers 하나에 전달 */}
+              <FlipNumbers
+                height={20}
+                width={18}
+                color="#444444"
+                background="transparent"
+                play
+                perspective={500}
+                numbers={formattedString}
+                duration={3.0}
+                numberStyle={{
+                  fontFamily: 'JetBrains Mono',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  WebkitFontSmoothing: 'antialiased'
+                }}
+                nonNumberStyle={{
+                  fontSize: '13px',
+                  fontWeight: 'bold',
+                  background: 'linear-gradient(to bottom, #888888 85%, #EEEEEE 90%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  paddingTop: '8px',
+                  width: '6px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                  height: '100%'
+                }}
+              />
+
+              {/* [고정형 툴팁] 숫자의 중앙 정렬에 영향을 주지 않도록 absolute 사용 */}
+              <div className="absolute left-[calc(50%+100px)] flex items-center">
+                <div
+                  className="relative whitespace-nowrap rounded-md px-2.5 py-1 text-[10px] font-extrabold"
+                  style={{
+                    color: '#888888',
+                    background: 'linear-gradient(white, white) padding-box, linear-gradient(to right, #ED1C24 30%, #F05023 100%) border-box',
+                    border: '1.5px solid transparent',
+                    display: 'inline-block',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.03)'
+                  }}
+                >
+                  Google Firebase
+                  
+                  {/* 왼쪽 화살표 (꼬리) - 오빠가 알려준 -left-1.25 적용 */}
+                  <div
+                    className="absolute -left-1.25 top-1/2 -translate-y-1/2 rotate-45 border-l-[1.5px] border-b-[1.5px]"
+                    style={{
+                      width: '7.5px',
+                      height: '7.5px',
+                      backgroundColor: 'white',
+                      borderColor: '#ED1C24'
+                    }}
+                  ></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -153,12 +156,12 @@ function Home() {
 function LevelCard({ lv, title, desc, steps, targetPath, color }: LevelCardProps) {
   return (
     <Link to={targetPath as any} className="no-underline h-full group">
-      <div 
+      <div
         className="relative flex h-full flex-col p-6.25 text-left bg-white border border-[#eee] rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] cursor-pointer transition-all duration-300 ease-in-out hover:-translate-y-2.5 hover:shadow-[0_15px_30px_rgba(0,0,0,0.1)]"
         style={{ borderTop: `5px solid ${color}` }}
       >
         <div className="mb-2 text-[11px] font-bold uppercase tracking-wider" style={{ color: color }}>
-          PHASE {lv}
+          Phase-{lv}
         </div>
         <h3 className="mb-2.5 text-base font-bold text-[#1a1a1a] break-keep">{title}</h3>
         <p className="mb-5 text-[13px] leading-relaxed text-[#666]">{desc}</p>
