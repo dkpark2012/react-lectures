@@ -118,7 +118,7 @@ function Home() {
           </h1>          
           <h1 className="text-3xl font-black tracking-tighter text-gray-400 leading-tight">
             <span className="bg-linear-to-r from-[#1976d2] via-[#388e3c] to-[#d32f2f] bg-clip-text text-transparent">
-              50-Steps 로 완성하는 React 길잡이
+              50 Steps 로 완성하는 React 길잡이
             </span>
           </h1>
           <div className="mt-1 flex flex-col items-center">
