@@ -62,11 +62,11 @@ const FlipUnit = ({ char, index, arrayLength, duration }: { char: string; index:
 };
 
 const levels = [
-  { lv: 1, title: "초급: 리액트의 본질", desc: "Virtual DOM, JSX, Props/State 등 리액트의 핵심 뼈대를 마스터합니다.", steps: "Step 1 ~ 10", targetPath: "/phase1/lecture1", color: "#1976d2" },
-  { lv: 2, title: "초상급: 훅과 실무 핵심", desc: "다양한 Hooks와 API 연동, 실전 레이아웃 구성을 배웁니다.", steps: "Step 11 ~ 20", targetPath: "/phase2/lecture11", color: "#388e3c" },
+  { lv: 1, title: "초급: React의 본질", desc: "Virtual DOM, JSX, Props/State 등 React의 핵심 뼈대를 마스터합니다.", steps: "Step 1 ~ 10", targetPath: "/phase1/lecture1", color: "#1976d2" },
+  { lv: 2, title: "초상급: Hooks와 실무 핵심", desc: "다양한 Hooks와 API 연동, 실전 Layout 구성을 배웁니다.", steps: "Step 11 ~ 20", targetPath: "/phase2/lecture11", color: "#388e3c" },
   { lv: 3, title: "중급: 아키텍처", desc: "Zustand, React Query 등 대규모 상태 관리와 설계를 다룹니다.", steps: "Step 21 ~ 30", targetPath: "/phase3/lecture21", color: "#fbc02d" },
   { lv: 4, title: "중상급: 성능과 인프라", desc: "최적화, 테스팅, CI/CD 배포 자동화까지 전문가의 영역을 배웁니다.", steps: "Step 31 ~ 40", targetPath: "/phase4/lecture31", color: "#f57c00" },
-  { lv: 5, title: "고급: 미래 기술", desc: "Next.js, RSC, Fiber 아키텍처 등 리액트의 최첨단 기술을 정복합니다.", steps: "Step 41 ~ 50", targetPath: "/phase5/lecture41", color: "#d32f2f" }
+  { lv: 5, title: "고급: 미래 기술", desc: "Next.js, RSC, Fiber 아키텍처 등 React의 최첨단 기술을 정복합니다.", steps: "Step 41 ~ 50", targetPath: "/phase5/lecture41", color: "#d32f2f" }
 ];
 
 function Home() {
