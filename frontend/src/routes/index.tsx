@@ -40,8 +40,7 @@ const FlipUnit = ({ char, index, arrayLength, duration }: { char: string; index:
       perspective={500}
       numbers={displayNum}
       duration={duration} // 고수님이 정의한 고정 0.5초 정속 사용
-      // 오른쪽 자릿수부터 0.3초 간격 시차 부여
-      delay={(arrayLength - 1 - index) * 0.3}
+      delay={(arrayLength - 1 - index) * 0.5}
       numberStyle={{ 
         fontFamily: 'JetBrains Mono',
         fontSize: '16px', 
